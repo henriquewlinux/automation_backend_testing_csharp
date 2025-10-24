@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Tests",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "args": ["test", "${workspaceFolder}/BackendIntegrationTests/BackendIntegrationTests.csproj", "--verbosity", "normal"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Debug Tests",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "dotnet",
+            "args": ["test", "${workspaceFolder}/BackendIntegrationTests/BackendIntegrationTests.csproj", "--verbosity", "normal"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "justMyCode": false
+        }
+    ]
+}

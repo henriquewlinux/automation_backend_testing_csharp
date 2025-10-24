@@ -1,0 +1,22 @@
+[
+    {
+        "key": "ctrl+shift+t",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Run All Tests"
+    },
+    {
+        "key": "ctrl+shift+l",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Run Login Tests"
+    },
+    {
+        "key": "ctrl+shift+p",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Run Products Tests"
+    },
+    {
+        "key": "ctrl+shift+b",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Build Project"
+    }
+]
