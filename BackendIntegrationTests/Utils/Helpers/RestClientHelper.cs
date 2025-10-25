@@ -4,18 +4,18 @@ namespace BackendIntegrationTests.Utils.Helpers
 {
     public class RestClientHelper
     {
-        private readonly RestClient _client;
-        public RestClientHelper()
+        private static readonly RestClient _client;
+        static RestClientHelper()
         {
-            var options = new RestClientOptions(ApiConfig.BaseUrl)
+            var options = new RestClientOptions(IntegrationTestsSetup.BaseUrl)
             {
-                MaxTimeout = (int)TimeSpan.FromSeconds(ApiConfig.TimeoutSeconds).TotalMilliseconds
+                MaxTimeout = (int)TimeSpan.FromSeconds(IntegrationTestsSetup.TimeoutSeconds).TotalMilliseconds
             };
             _client = new RestClient(options);
         }
 
 
-        public async Task<RestResponse> ExecuteAsyncPost(string route, Object data, Dictionary<string, string>? headers = null)
+        public static async Task<RestResponse> ExecuteAsyncPost(string route, Object data, Dictionary<string, string>? headers = null)
         {
             var request = new RestRequest(route, Method.Post);
 
@@ -32,7 +32,7 @@ namespace BackendIntegrationTests.Utils.Helpers
             return await _client.ExecuteAsync(request);
         }
 
-        public async Task<RestResponse> ExecuteAsyncGet(string route, Dictionary<string, string>? headers = null)
+        public static async Task<RestResponse> ExecuteAsyncGet(string route, Dictionary<string, string>? headers = null)
         {
             var request = new RestRequest(route, Method.Get);
 

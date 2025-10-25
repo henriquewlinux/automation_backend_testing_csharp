@@ -7,41 +7,21 @@ using System.Net;
 namespace BackendIntegrationTests.Tests
 {
     [TestFixture]
-    public class ProductsTests
+    public class ProductsTests : IntegrationTestsSetup
     {
-        private ApiConfig.RouteManager _routeManager;
-        private ProductsRoute _productsRoute;
-        private LoginRoute _loginRoute;
-
-        [OneTimeSetUp]
-        public async Task OneTimeSetUp()
+        private string? _token;
+        
+        [SetUp]
+        public async Task SetUp()
         {
-            _routeManager = new ApiConfig.RouteManager();
-            _productsRoute = _routeManager.ProductsRoute;
-            _loginRoute = _routeManager.LoginRoute;
-
-            // Realiza login para obter token se ainda não tiver
-            if (string.IsNullOrEmpty(TestData.AuthTokens.BearerToken))
-            {
-                var loginResponse = await _loginRoute.LoginAsync(TestData.LoginCredentials.ValidEmail, TestData.LoginCredentials.ValidPassword);
-                if (loginResponse.IsSuccessful)
-                {
-                    TestData.AuthTokens.BearerToken = ExtractTokenFromResponse(loginResponse);
-                }
-            }
-        }
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            _routeManager?.Dispose();
+            _token = await LoginRoute.GetToken(JsonDataReader.GetValue("credentials.valid.email"), JsonDataReader.GetValue("credentials.valid.password"));
         }
 
         [Test]
         public async Task GetAllProducts_ShouldReturnSuccessAndValidSchema()
         {
             // Act
-            var response = await _productsRoute.GetAllProductsAsync();
+            var response = await ProductsRoute.GetAllProductsAsync();
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK),
@@ -59,16 +39,22 @@ namespace BackendIntegrationTests.Tests
         [Test]
         public async Task CreateProduct_WithValidDataAndToken_ShouldReturnCreated()
         {
-            // Arrange
-            //var responseLogin = await _loginRoute.LoginAsync(TestData.LoginCredentials.ValidEmail, TestData.LoginCredentials.ValidPassword);
-            // JObject json = JObject.Parse(responseLogin.Content);
-            // string token = json["chave"]?.ToString();
             //var token = responseLogin.Content;
-            Assert.That(TestData.AuthTokens.BearerToken, Is.Not.Null.And.Not.Empty,
+            Assert.That(_token, Is.Not.Null.And.Not.Empty,
                 "Bearer token should be available for this test");
 
             // Act
-            var response = await _productsRoute.CreateProductAsync(TestData.ProductData.ValidProduct, TestData.AuthTokens.BearerToken);
+            var validProduct = JsonDataReader.GetValue("products.valid");
+
+            // Cria um produto com nome único para evitar duplicação
+            var uniqueProduct = new
+            {
+                name = $"{validProduct.name} - {DateTime.Now:yyyyMMddHHmmss}",
+                price = (int)validProduct.price,
+                stock = (int)validProduct.stock
+            };
+
+            var response = await ProductsRoute.CreateProductAsync(uniqueProduct, _token);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created),
@@ -87,7 +73,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithoutAuthentication_ShouldReturnUnauthorized()
         {
             // Act
-            var response = await _productsRoute.CreateProductAsync(TestData.ProductData.ValidProduct);
+            var response = await ProductsRoute.CreateProductAsync(JsonDataReader.GetValue("products.valid"));
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized),
@@ -98,7 +84,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithInvalidToken_ShouldReturnUnauthorized()
         {
             // Act
-            var response = await _productsRoute.CreateProductAsync(TestData.ProductData.ValidProduct, "invalid_token");
+            var response = await ProductsRoute.CreateProductAsync(JsonDataReader.GetValue("products.valid"), "invalid_token");
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized),
@@ -109,11 +95,11 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithInvalidData_ShouldReturnBadRequest()
         {
             // Arrange
-            Assert.That(TestData.AuthTokens.BearerToken, Is.Not.Null.And.Not.Empty,
+            Assert.That(_token, Is.Not.Null.And.Not.Empty,
                 "Bearer token should be available for this test");
 
             // Act
-            var response = await _productsRoute.CreateProductAsync(TestData.ProductData.InvalidProduct, TestData.AuthTokens.BearerToken);
+            var response = await ProductsRoute.CreateProductAsync(JsonDataReader.GetValue("products.invalid"), _token);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),
@@ -124,7 +110,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithMissingName_ShouldReturnBadRequest()
         {
             // Arrange
-            Assert.That(TestData.AuthTokens.BearerToken, Is.Not.Null.And.Not.Empty,
+            Assert.That(_token, Is.Not.Null.And.Not.Empty,
                 "Bearer token should be available for this test");
 
             var invalidProduct = new
@@ -135,28 +121,11 @@ namespace BackendIntegrationTests.Tests
             };
 
             // Act
-            var response = await _productsRoute.CreateProductAsync(invalidProduct, TestData.AuthTokens.BearerToken);
+            var response = await ProductsRoute.CreateProductAsync(invalidProduct, _token);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),
                 $"Expected status 400 but got {response.StatusCode}. Response: {response.Content}");
-        }
-
-        private string? ExtractTokenFromResponse(RestSharp.RestResponse response)
-        {
-            if (response.IsSuccessful && !string.IsNullOrEmpty(response.Content))
-            {
-                try
-                {
-                    dynamic? jsonResponse = JsonConvert.DeserializeObject(response.Content);
-                    return jsonResponse?.token?.ToString();
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-            return null;
         }
     }
 }

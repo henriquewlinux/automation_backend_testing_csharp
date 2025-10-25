@@ -1,0 +1,25 @@
+{
+    "credentials": {
+        "valid": {
+            "email": "teste@teste.com",
+            "password": "teste"
+        },
+        "invalid": {
+            "email": "invalid@email.com",
+            "password": "wrongpassword"
+        }
+    },
+    "products": {
+        "valid": {
+            "name": "Samsung A80",
+            "price": 1233,
+            "stock": 15
+        },
+        "invalid": {
+            "name": "",
+            "price": -1,
+            "stock": -5
+        }
+    }
+
+}
