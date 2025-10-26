@@ -1,5 +1,4 @@
 using RestSharp;
-using BackendIntegrationTests.Utils;
 using BackendIntegrationTests.Utils.Helpers;
 using Newtonsoft.Json;
 
@@ -7,7 +6,7 @@ namespace BackendIntegrationTests.Routes;
 public class LoginRoute : RestClientHelper
 {
     const string ROUTE = "/login";
-    public static async Task<RestResponse> LoginAsync(string email, string password)
+    public async Task<RestResponse> LoginAsync(string email, string password)
     {
         var data = new
         {
@@ -18,7 +17,7 @@ public class LoginRoute : RestClientHelper
         return await ExecuteAsyncPost(ROUTE, data);
     }
 
-    public static async Task<string?> GetToken(string email, string password)
+    public async Task<string?> GetToken(string email, string password)
     {
         var data = new
         {
@@ -32,7 +31,7 @@ public class LoginRoute : RestClientHelper
         return token;
     }
 
-    public static string? ExtractTokenFromResponse(RestSharp.RestResponse response)
+    public string? ExtractTokenFromResponse(RestSharp.RestResponse response)
     {
         if (response.IsSuccessful && !string.IsNullOrEmpty(response.Content))
         {

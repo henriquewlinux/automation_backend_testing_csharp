@@ -1,24 +1,39 @@
 using NUnit.Framework;
 using BackendIntegrationTests.Routes;
 using BackendIntegrationTests.Utils;
+using BackendIntegrationTests.Schemas;
 using Newtonsoft.Json;
 using System.Net;
 
 namespace BackendIntegrationTests.Tests
 {
     [TestFixture]
+    [Order(1)]
     public class LoginTests : IntegrationTestsSetup
     {
+        private LoginRoute _loginRoute;
         readonly string validEmail = JsonDataReader.GetValue("credentials.valid.email");
         readonly string validPassword = JsonDataReader.GetValue("credentials.valid.password");
         readonly string invalidEmail = JsonDataReader.GetValue("credentials.invalid.email");
         readonly string invalidPassword = JsonDataReader.GetValue("credentials.invalid.password");
 
+        [OneTimeSetUp]
+        public void SetUpLoginRoute()
+        {
+            _loginRoute = new LoginRoute();
+        }
+
+        [OneTimeTearDown]
+        public void TearDownLoginRoute()
+        {
+            _loginRoute?.Dispose();
+        }
+
         [Test]
         public async Task Login_WithValidCredentials_ShouldReturnSuccessAndValidToken()
         {
             // Act
-            var response = await LoginRoute.LoginAsync(validEmail, validPassword);
+            var response = await _loginRoute.LoginAsync(validEmail, validPassword);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK),
@@ -28,12 +43,12 @@ namespace BackendIntegrationTests.Tests
                 "Response content should not be null or empty");
 
             // Valida o schema da resposta
-            var isValidSchema = SchemaValidator.ValidateJson(response.Content!, "LoginResponseSchema.json", out var errors);
+            var isValidSchema = SchemaValidator.ValidateJson<LoginResponseSchema>(response.Content!, out var errors);
             Assert.That(isValidSchema, Is.True,
                 $"Response schema validation failed. Errors: {string.Join(", ", errors)}");
 
             // Extrai e valida o token
-            var token = LoginRoute.ExtractTokenFromResponse(response);
+            var token = _loginRoute.ExtractTokenFromResponse(response);
             Assert.That(token, Is.Not.Null.And.Not.Empty, "Token should be present in response");
         }
 
@@ -41,7 +56,7 @@ namespace BackendIntegrationTests.Tests
         public async Task Login_WithInvalidCredentials_ShouldReturnUnauthorized()
         {
             // Act
-            var response = await LoginRoute.LoginAsync(invalidEmail, invalidPassword);
+            var response = await _loginRoute.LoginAsync(invalidEmail, invalidPassword);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized),
@@ -55,7 +70,7 @@ namespace BackendIntegrationTests.Tests
         public async Task Login_WithEmptyEmail_ShouldReturnBadRequest()
         {
             // Act
-            var response = await LoginRoute.LoginAsync("", validPassword);
+            var response = await _loginRoute.LoginAsync("", validPassword);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),
@@ -66,7 +81,7 @@ namespace BackendIntegrationTests.Tests
         public async Task Login_WithEmptyPassword_ShouldReturnBadRequest()
         {
             // Act
-            var response = await LoginRoute.LoginAsync(validEmail, "");
+            var response = await _loginRoute.LoginAsync(validEmail, "");
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),

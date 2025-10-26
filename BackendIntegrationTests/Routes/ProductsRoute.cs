@@ -1,13 +1,12 @@
 using RestSharp;
 using BackendIntegrationTests.Utils.Helpers;
-using BackendIntegrationTests.Utils;
 
 namespace BackendIntegrationTests.Routes;
 public class ProductsRoute : RestClientHelper
 {
     const string ROUTE = "/products";
 
-    public static async Task<RestResponse> GetAllProductsAsync(string token = "")
+    public async Task<RestResponse> GetAllProductsAsync(string token = "")
     {
         // Monta os headers usando o HeadersBuilder
         var headers = new HeadersBuilder()
@@ -24,7 +23,7 @@ public class ProductsRoute : RestClientHelper
         return await ExecuteAsyncGet(ROUTE, headers.Build());
     }
 
-    public static async Task<RestResponse> CreateProductAsync(object data, string token = "")
+    public async Task<RestResponse> CreateProductAsync(object data, string token = "")
     {
         // Monta os headers usando o HeadersBuilder
         var headers = new HeadersBuilder()

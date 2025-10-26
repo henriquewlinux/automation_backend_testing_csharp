@@ -4,8 +4,9 @@ namespace BackendIntegrationTests.Utils.Helpers
 {
     public class RestClientHelper
     {
-        private static readonly RestClient _client;
-        static RestClientHelper()
+        private readonly RestClient _client;
+
+        public RestClientHelper()
         {
             var options = new RestClientOptions(IntegrationTestsSetup.BaseUrl)
             {
@@ -15,7 +16,7 @@ namespace BackendIntegrationTests.Utils.Helpers
         }
 
 
-        public static async Task<RestResponse> ExecuteAsyncPost(string route, Object data, Dictionary<string, string>? headers = null)
+        public async Task<RestResponse> ExecuteAsyncPost(string route, Object data, Dictionary<string, string>? headers = null)
         {
             var request = new RestRequest(route, Method.Post);
 
@@ -32,7 +33,7 @@ namespace BackendIntegrationTests.Utils.Helpers
             return await _client.ExecuteAsync(request);
         }
 
-        public static async Task<RestResponse> ExecuteAsyncGet(string route, Dictionary<string, string>? headers = null)
+        public async Task<RestResponse> ExecuteAsyncGet(string route, Dictionary<string, string>? headers = null)
         {
             var request = new RestRequest(route, Method.Get);
 

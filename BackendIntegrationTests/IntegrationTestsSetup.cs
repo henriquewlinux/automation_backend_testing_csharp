@@ -44,30 +44,11 @@ public class IntegrationTestsSetup
     }
 }
 
-/// <summary>
-/// Classe para ler valores do arquivo TestData.json usando notação de ponto
-/// </summary>
 public static class JsonDataReader
 {
     private static JObject? _testData;
     private static readonly object _lock = new object();
 
-    /// <summary>
-    /// Obtém um valor do TestData.json usando notação de ponto
-    /// </summary>
-    /// <param name="keyPath">Caminho da chave usando notação de ponto (ex: "credentials.valid" ou "credentials.valid.email")</param>
-    /// <returns>Objeto dinâmico que pode ser um objeto completo ou valor específico. Para objetos, use .propriedade para acessar campos.</returns>
-    /// <exception cref="InvalidOperationException">Lançada quando o arquivo não pode ser carregado</exception>
-    /// <exception cref="KeyNotFoundException">Lançada quando a chave não é encontrada no JSON</exception>
-    /// <example>
-    /// // Obter objeto completo
-    /// dynamic validCredentials = JsonDataReader.GetValue("credentials.valid");
-    /// string email = validCredentials.email;
-    /// string password = validCredentials.password;
-    ///
-    /// // Obter valor específico
-    /// string email = JsonDataReader.GetValue("credentials.valid.email");
-    /// </example>
     public static dynamic GetValue(string keyPath)
     {
         if (string.IsNullOrWhiteSpace(keyPath))

@@ -1,0 +1,89 @@
+namespace BackendIntegrationTests.Schemas
+{
+    public class ProductSchema
+    {
+        public static string Schema => @"{
+            'type': 'object',
+            'properties': {
+                'uuid': {
+                    'type': 'string',
+                    'pattern': '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+                    'description': 'UUID v4 format'
+                },
+                'name': {
+                    'type': 'string',
+                    'minLength': 1,
+                    'description': 'Product name'
+                },
+                'price': {
+                    'type': 'number',
+                    'minimum': 0,
+                    'description': 'Product price'
+                },
+                'stock': {
+                    'type': 'integer',
+                    'minimum': 0,
+                    'description': 'Product stock quantity'
+                },
+                'createdAt': {
+                    'type': 'string',
+                    'format': 'date-time',
+                    'description': 'ISO 8601 date-time string'
+                },
+                'updatedAt': {
+                    'type': 'string',
+                    'format': 'date-time',
+                    'description': 'ISO 8601 date-time string'
+                }
+            },
+            'required': ['uuid', 'name', 'price', 'stock', 'createdAt', 'updatedAt'],
+            'additionalProperties': false
+        }";
+    }
+
+    public class ProductsListSchema
+    {
+        public static string Schema => @"{
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'uuid': {
+                        'type': 'string',
+                        'pattern': '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+                        'description': 'UUID v4 format'
+                    },
+                    'name': {
+                        'type': 'string',
+                        'minLength': 1,
+                        'description': 'Product name'
+                    },
+                    'price': {
+                        'type': 'number',
+                        'minimum': 0,
+                        'description': 'Product price'
+                    },
+                    'stock': {
+                        'type': 'integer',
+                        'minimum': 0,
+                        'description': 'Product stock quantity'
+                    },
+                    'createdAt': {
+                        'type': 'string',
+                        'format': 'date-time',
+                        'description': 'ISO 8601 date-time string'
+                    },
+                    'updatedAt': {
+                        'type': 'string',
+                        'format': 'date-time',
+                        'description': 'ISO 8601 date-time string'
+                    }
+                },
+                'required': ['uuid', 'name', 'price', 'stock', 'createdAt', 'updatedAt'],
+                'additionalProperties': false
+            },
+            'minItems': 0,
+            'description': 'Array of product objects'
+        }";
+    }
+}
