@@ -7,7 +7,6 @@ using BackendIntegrationTests.Utils.Helpers;
 namespace BackendIntegrationTests.Tests
 {
     [TestFixture]
-    [Order(2)]
     public class ProductsTests : IntegrationTestsSetup
     {
         private ProductsRoute _productsRoute;
@@ -19,7 +18,7 @@ namespace BackendIntegrationTests.Tests
         {
             _productsRoute = new ProductsRoute();
             _loginRoute = new LoginRoute();
-            _token = await _loginRoute.GetToken(JsonDataReader.GetValue("credentials.valid.email"), JsonDataReader.GetValue("credentials.valid.password"));
+            _token = await _loginRoute.GetToken(GetDataValue("credentials.valid.email"), GetDataValue("credentials.valid.password"));
         }
 
         [OneTimeTearDown]
@@ -50,7 +49,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithValidDataAndToken_ShouldReturnCreated()
         {
             // Arrange
-            var validProduct = JsonDataReader.GetValue("products.valid");
+            var validProduct = GetDataObject("products.valid");
 
             // Create new product
             var uniqueProduct = new
@@ -78,7 +77,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithoutAuthentication_ShouldReturnUnauthorized()
         {
             // Act
-            var response = await _productsRoute.CreateProductAsync(JsonDataReader.GetValue("products.valid"));
+            var response = await _productsRoute.CreateProductAsync(GetDataValue("products.valid"));
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized),
@@ -89,7 +88,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithInvalidToken_ShouldReturnUnauthorized()
         {
             // Act
-            var response = await _productsRoute.CreateProductAsync(JsonDataReader.GetValue("products.valid"), "invalid_token");
+            var response = await _productsRoute.CreateProductAsync(GetDataValue("products.valid"), "invalid_token");
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized),
@@ -100,7 +99,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithInvalidData_ShouldReturnBadRequest()
         {
             // Act
-            var response = await _productsRoute.CreateProductAsync(JsonDataReader.GetValue("products.invalid"), _token);
+            var response = await _productsRoute.CreateProductAsync(GetDataValue("products.invalid"), _token);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),
