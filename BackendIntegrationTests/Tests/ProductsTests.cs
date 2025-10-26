@@ -1,8 +1,8 @@
 using NUnit.Framework;
 using BackendIntegrationTests.Routes;
-using BackendIntegrationTests.Utils;
 using BackendIntegrationTests.Schemas;
 using System.Net;
+using BackendIntegrationTests.Utils.Helpers;
 
 namespace BackendIntegrationTests.Tests
 {
@@ -42,23 +42,17 @@ namespace BackendIntegrationTests.Tests
             Assert.That(response.Content, Is.Not.Null,
                 "Response content should not be null");
 
-            // Valida o schema da resposta
-            var isValidSchema = SchemaValidator.ValidateJson<ProductsListSchema>(response.Content!, out var errors);
-            Assert.That(isValidSchema, Is.True,
-                $"Response schema validation failed. Errors: {string.Join(", ", errors)}");
+            // Assert Schema
+            SchemaValidator.AssertJsonSchema(response.Content, ProductsListSchema.Schema, "ShouldReturnSuccessAndValidSchema");
         }
 
         [Test]
         public async Task CreateProduct_WithValidDataAndToken_ShouldReturnCreated()
         {
-            //var token = responseLogin.Content;
-            Assert.That(_token, Is.Not.Null.And.Not.Empty,
-                "Bearer token should be available for this test");
-
-            // Act
+            // Arrange
             var validProduct = JsonDataReader.GetValue("products.valid");
 
-            // Cria um produto com nome único para evitar duplicação
+            // Create new product
             var uniqueProduct = new
             {
                 name = $"{validProduct.name} - {DateTime.Now:yyyyMMddHHmmss}",
@@ -66,6 +60,7 @@ namespace BackendIntegrationTests.Tests
                 stock = (int)validProduct.stock
             };
 
+            // Act
             var response = await _productsRoute.CreateProductAsync(uniqueProduct, _token);
 
             // Assert
@@ -75,10 +70,8 @@ namespace BackendIntegrationTests.Tests
             Assert.That(response.Content, Is.Not.Null.And.Not.Empty,
                 "Response content should not be null or empty");
 
-            // Valida o schema da resposta
-            var isValidSchema = SchemaValidator.ValidateJson<ProductSchema>(response.Content!, out var errors);
-            Assert.That(isValidSchema, Is.False,
-                $"Response schema validation failed. Errors: {string.Join(", ", errors)}");
+            // Assert Schema
+            SchemaValidator.AssertJsonSchema(response.Content, ProductSchema.Schema, "ShouldReturnSuccessAndValidSchema");
         }
 
         [Test]
@@ -106,10 +99,6 @@ namespace BackendIntegrationTests.Tests
         [Test]
         public async Task CreateProduct_WithInvalidData_ShouldReturnBadRequest()
         {
-            // Arrange
-            Assert.That(_token, Is.Not.Null.And.Not.Empty,
-                "Bearer token should be available for this test");
-
             // Act
             var response = await _productsRoute.CreateProductAsync(JsonDataReader.GetValue("products.invalid"), _token);
 
@@ -122,9 +111,6 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithMissingName_ShouldReturnBadRequest()
         {
             // Arrange
-            Assert.That(_token, Is.Not.Null.And.Not.Empty,
-                "Bearer token should be available for this test");
-
             var invalidProduct = new
             {
                 price = 100,

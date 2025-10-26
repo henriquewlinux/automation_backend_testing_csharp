@@ -1,8 +1,7 @@
 using NUnit.Framework;
 using BackendIntegrationTests.Routes;
-using BackendIntegrationTests.Utils;
+using BackendIntegrationTests.Utils.Helpers;
 using BackendIntegrationTests.Schemas;
-using Newtonsoft.Json;
 using System.Net;
 
 namespace BackendIntegrationTests.Tests
@@ -43,9 +42,7 @@ namespace BackendIntegrationTests.Tests
                 "Response content should not be null or empty");
 
             // Valida o schema da resposta
-            var isValidSchema = SchemaValidator.ValidateJson<LoginResponseSchema>(response.Content!, out var errors);
-            Assert.That(isValidSchema, Is.True,
-                $"Response schema validation failed. Errors: {string.Join(", ", errors)}");
+            SchemaValidator.AssertJsonSchema(response.Content, LoginSchema.Schema, "ShouldReturnSuccessAndValidToken");
 
             // Extrai e valida o token
             var token = _loginRoute.ExtractTokenFromResponse(response);

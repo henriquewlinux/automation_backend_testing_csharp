@@ -1,54 +1,27 @@
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
-using System.Reflection;
+using NUnit.Framework;
 
-namespace BackendIntegrationTests.Utils
+namespace BackendIntegrationTests.Utils.Helpers;
+public class SchemaValidator
 {
-    public class SchemaValidator
+    public static void AssertJsonSchema(string jsonResponse, string schema, string testName = "")
     {
-        public static bool ValidateJson<T>(string jsonContent, out IList<string> errors)
+        var schemaObj = JSchema.Parse(schema);
+        var json = JToken.Parse(jsonResponse);
+
+        IList<string> errors;
+        bool isValid = json.IsValid(schemaObj, out errors);
+
+        var errorMessage = string.IsNullOrEmpty(testName)
+            ? $"Schema validation failed"
+            : $"Schema validation failed for {testName}";
+
+        if (!isValid)
         {
-            errors = new List<string>();
-
-            try
-            {
-                // Use reflection to get the 'Schema' property from the type T
-                var schemaProperty = typeof(T).GetProperty("Schema", BindingFlags.Public | BindingFlags.Static);
-
-                if (schemaProperty == null)
-                {
-                    errors.Add($"Schema property not found in type {typeof(T).Name}. Make sure the class has a public static 'Schema' property.");
-                    return false;
-                }
-
-                // Get the schema string value
-                var schemaString = schemaProperty.GetValue(null) as string;
-
-                if (string.IsNullOrEmpty(schemaString))
-                {
-                    errors.Add($"Schema property in type {typeof(T).Name} is null or empty.");
-                    return false;
-                }
-
-                // Parse the JSON schema
-                var schema = JSchema.Parse(schemaString);
-
-                // Parse the JSON content
-                JToken jsonToken = JToken.Parse(jsonContent);
-
-                // Validate the JSON against the schema
-                return jsonToken.IsValid(schema, out errors);
-            }
-            catch (JSchemaException ex)
-            {
-                errors.Add($"Schema parsing error: {ex.Message}");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"Validation error: {ex.Message}");
-                return false;
-            }
+            errorMessage += $"\nErrors: {string.Join(", ", errors)}";
         }
+
+        Assert.That(isValid, Is.True, errorMessage);
     }
 }
