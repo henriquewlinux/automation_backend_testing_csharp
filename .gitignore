@@ -1,4 +1,5 @@
 CLAUDE.MD
+.claude
 BackendIntegrationTests/bin/
 BackendIntegrationTests/obj/
 *.dll

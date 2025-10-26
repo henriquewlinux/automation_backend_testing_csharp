@@ -7,7 +7,7 @@ using System.Net;
 namespace BackendIntegrationTests.Tests
 {
     [TestFixture]
-    [Order(1)]
+    [Parallelizable(ParallelScope.All)]
     public class LoginTests : IntegrationTestsSetup
     {
         private LoginRoute _loginRoute;

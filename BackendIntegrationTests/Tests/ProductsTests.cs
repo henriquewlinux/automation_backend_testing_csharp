@@ -7,6 +7,7 @@ using BackendIntegrationTests.Utils.Helpers;
 namespace BackendIntegrationTests.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public class ProductsTests : IntegrationTestsSetup
     {
         private ProductsRoute _productsRoute;

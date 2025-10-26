@@ -3,6 +3,9 @@ using Newtonsoft.Json.Linq;
 using BackendIntegrationTests.Utils.Bases;
 using NUnit.Framework;
 
+[assembly: Parallelizable(ParallelScope.All)]
+[assembly: LevelOfParallelism(8)]
+
 namespace BackendIntegrationTests;
 
 public class IntegrationTestsSetup
