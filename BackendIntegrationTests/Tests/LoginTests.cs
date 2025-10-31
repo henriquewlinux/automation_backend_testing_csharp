@@ -2,6 +2,7 @@ using NUnit.Framework;
 using BackendIntegrationTests.Routes;
 using BackendIntegrationTests.Utils.Helpers;
 using BackendIntegrationTests.Schemas;
+using BackendIntegrationTests.Models.TestData;
 using System.Net;
 using Allure.NUnit.Attributes;
 using Allure.Net.Commons;
@@ -15,6 +16,10 @@ namespace BackendIntegrationTests.Tests
     public class LoginTests : IntegrationTestsSetup
     {
         private LoginRoute _loginRoute;
+
+        // Test Data Properties
+        private new Credential ValidCredential => TestData.Credentials.Valid;
+        private new Credential InvalidCredential => TestData.Credentials.Invalid;
 
         [OneTimeSetUp]
         public void SetUpLoginRoute()
@@ -36,7 +41,7 @@ namespace BackendIntegrationTests.Tests
         public async Task Login_WithValidCredentials_ShouldReturnSuccessAndValidToken()
         {
             // Act
-            var response = await _loginRoute.LoginAsync(GetDataValue("credentials.valid.email"), GetDataValue("credentials.valid.password"));
+            var response = await _loginRoute.LoginAsync(ValidCredential.Email, ValidCredential.Password);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK),
@@ -61,7 +66,7 @@ namespace BackendIntegrationTests.Tests
         public async Task Login_WithInvalidCredentials_ShouldReturnUnauthorized()
         {
             // Act
-            var response = await _loginRoute.LoginAsync(GetDataValue("credentials.invalid.email"), GetDataValue("credentials.invalid.password"));
+            var response = await _loginRoute.LoginAsync(InvalidCredential.Email, InvalidCredential.Password);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized),
@@ -79,7 +84,7 @@ namespace BackendIntegrationTests.Tests
         public async Task Login_WithEmptyEmail_ShouldReturnBadRequest()
         {
             // Act
-            var response = await _loginRoute.LoginAsync("", GetDataValue("credentials.valid.password"));
+            var response = await _loginRoute.LoginAsync("", ValidCredential.Password);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),
@@ -94,7 +99,7 @@ namespace BackendIntegrationTests.Tests
         public async Task Login_WithEmptyPassword_ShouldReturnBadRequest()
         {
             // Act
-            var response = await _loginRoute.LoginAsync(GetDataValue("credentials.valid.email"), "");
+            var response = await _loginRoute.LoginAsync(ValidCredential.Email, "");
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),

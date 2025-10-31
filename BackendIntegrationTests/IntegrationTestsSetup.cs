@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using BackendIntegrationTests.Utils.Bases;
+using BackendIntegrationTests.Models.TestData;
 using NUnit.Framework;
 using Allure.Net.Commons;
 
@@ -13,31 +14,47 @@ public class IntegrationTestsSetup
 {
     public static string BaseUrl { get; set; } = BaseName.BASEURL;
     public static int TimeoutSeconds { get; set; } = BaseName.TIMEOUTSECONDS;
-    private static readonly Lazy<JObject> _testData = new(() =>
+    // private static readonly Lazy<JObject> _testData = new(() =>
+    // {
+    //     var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Data", "TestData.json");
+    //     return JObject.Parse(File.ReadAllText(Path.GetFullPath(path)));
+    // });
+
+    // Strongly typed test data
+    private static readonly Lazy<TestDataModel> _typedTestData = new(() =>
     {
         var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Data", "TestData.json");
-        return JObject.Parse(File.ReadAllText(Path.GetFullPath(path)));
+        var json = File.ReadAllText(Path.GetFullPath(path));
+        return JsonConvert.DeserializeObject<TestDataModel>(json)
+            ?? throw new InvalidOperationException("Failed to load test data");
     });
 
-    // Return string
-    public static string GetDataValue(string keyPath)
-    {
-        var keys = keyPath.Split('.');
-        JToken? token = _testData.Value;
-        
-        foreach (var key in keys)
-            token = token?[key];
-            
-        return token?.ToString() ?? throw new KeyNotFoundException($"Key '{keyPath}' not found");
-    }
+    // Public strongly typed properties
+    public static TestDataModel TestData => _typedTestData.Value;
+    public static Credential ValidCredential => TestData.Credentials.Valid;
+    public static Credential InvalidCredential => TestData.Credentials.Invalid;
+    public static Product ValidProduct => TestData.Products.Valid;
+    public static Product InvalidProduct => TestData.Products.Invalid;
 
-    // Return object dynamic
-    public static dynamic GetDataObject(string keyPath)
-    {
-        var json = GetDataValue(keyPath);
-        return JsonConvert.DeserializeObject(json) ??
-               throw new InvalidOperationException($"Failed to deserialize '{keyPath}'");
-    }
+    // Return string
+    // public static string GetDataValue(string keyPath)
+    // {
+    //     var keys = keyPath.Split('.');
+    //     JToken? token = _testData.Value;
+        
+    //     foreach (var key in keys)
+    //         token = token?[key];
+            
+    //     return token?.ToString() ?? throw new KeyNotFoundException($"Key '{keyPath}' not found");
+    // }
+
+    // // Return object dynamic
+    // public static dynamic GetDataObject(string keyPath)
+    // {
+    //     var json = GetDataValue(keyPath);
+    //     return JsonConvert.DeserializeObject(json) ??
+    //            throw new InvalidOperationException($"Failed to deserialize '{keyPath}'");
+    // }
 
     [SetUp]
     public void SetUp()

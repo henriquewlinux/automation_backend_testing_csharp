@@ -3,6 +3,7 @@ using BackendIntegrationTests.Routes;
 using BackendIntegrationTests.Schemas;
 using System.Net;
 using BackendIntegrationTests.Utils.Helpers;
+using BackendIntegrationTests.Models.TestData;
 using Allure.NUnit.Attributes;
 using Allure.Net.Commons;
 
@@ -18,12 +19,18 @@ namespace BackendIntegrationTests.Tests
         private LoginRoute _loginRoute;
         private string? _token;
 
+        // Test Data Properties
+        private new Credential ValidCredential => TestData.Credentials.Valid;
+        private new Credential InvalidCredential => TestData.Credentials.Invalid;
+        private new Product ValidProduct => TestData.Products.Valid;
+        private new Product InvalidProduct => TestData.Products.Invalid;
+
         [OneTimeSetUp]
         public async Task SetUpProductsRoute()
         {
             _productsRoute = new ProductsRoute();
             _loginRoute = new LoginRoute();
-            _token = await _loginRoute.GetToken(GetDataValue("credentials.valid.email"), GetDataValue("credentials.valid.password"));
+            _token = await _loginRoute.GetToken(ValidCredential.Email, ValidCredential.Password);
         }
 
         [OneTimeTearDown]
@@ -61,19 +68,11 @@ namespace BackendIntegrationTests.Tests
         [AllureOwner("QA Team")]
         public async Task CreateProduct_WithValidDataAndToken_ShouldReturnCreated()
         {
-            // Arrange
-            var validProduct = GetDataObject("products.valid");
-
-            // Create new product
-            var uniqueProduct = new
-            {
-                name = $"{validProduct.name} - {DateTime.Now:yyyyMMddHHmmss}",
-                price = (int)validProduct.price,
-                stock = (int)validProduct.stock
-            };
+            // Arrange - Create product with unique name
+            var uniqueProduct = ValidProduct.WithUniqueName();
 
             // Act
-            var response = await _productsRoute.CreateProductAsync(uniqueProduct, _token);
+            var response = await _productsRoute.CreateProductAsync(uniqueProduct, _token!);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created),
@@ -94,7 +93,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithoutAuthentication_ShouldReturnUnauthorized()
         {
             // Act
-            var response = await _productsRoute.CreateProductAsync(GetDataValue("products.valid"));
+            var response = await _productsRoute.CreateProductAsync(ValidProduct.ToJson());
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized),
@@ -109,7 +108,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithInvalidToken_ShouldReturnUnauthorized()
         {
             // Act
-            var response = await _productsRoute.CreateProductAsync(GetDataValue("products.valid"), "invalid_token");
+            var response = await _productsRoute.CreateProductAsync(ValidProduct.ToJson(), "invalid_token");
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized),
@@ -124,7 +123,7 @@ namespace BackendIntegrationTests.Tests
         public async Task CreateProduct_WithInvalidData_ShouldReturnBadRequest()
         {
             // Act
-            var response = await _productsRoute.CreateProductAsync(GetDataValue("products.invalid"), _token);
+            var response = await _productsRoute.CreateProductAsync(InvalidProduct.ToJson(), _token!);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),
@@ -147,7 +146,7 @@ namespace BackendIntegrationTests.Tests
             };
 
             // Act
-            var response = await _productsRoute.CreateProductAsync(invalidProduct, _token);
+            var response = await _productsRoute.CreateProductAsync(invalidProduct, _token!);
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest),
