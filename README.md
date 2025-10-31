@@ -20,6 +20,7 @@ This project is a complete automated test suite for validating REST API endpoint
 - **RestSharp 110.2.0** - HTTP client for API calls
 - **Newtonsoft.Json 13.0.3** - JSON serialization/deserialization
 - **Newtonsoft.Json.Schema 3.0.15** - JSON schema validation
+- **Allure.NUnit 2.12.1** - Advanced test reporting and analytics
 - **Visual Studio Code** - Development environment
 
 ## Project Structure
@@ -200,10 +201,86 @@ bool isValid = SchemaValidator.ValidateResponse(response, LoginSchema.GetSchema(
 
 ## Reports
 
+### Console Reports
+
 Tests generate automatic console logs with:
 - Executed test name
 - Status (Passed/Failed)
 - Detailed error messages
+
+### Allure Reports
+
+This project is integrated with **Allure Framework** for comprehensive test reporting with rich visualizations, historical trends, and detailed test analytics.
+
+#### Installing Allure CLI
+
+**Windows (via Scoop):**
+```bash
+scoop install allure
+```
+
+**macOS:**
+```bash
+brew install allure
+```
+
+**Linux:**
+```bash
+# Download and extract
+wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+tar -zxvf allure-2.24.0.tgz -C /opt/
+sudo ln -s /opt/allure-2.24.0/bin/allure /usr/bin/allure
+```
+
+**Manual Installation:**
+Download from [Allure releases](https://github.com/allure-framework/allure2/releases) and add to PATH.
+
+#### Generating Allure Reports
+
+1. **Run tests** (this will generate results in `allure-results` directory):
+```bash
+dotnet test
+```
+
+2. **Generate and open the report**:
+```bash
+# Generate HTML report and open in browser
+allure serve BackendIntegrationTests/bin/Debug/net8.0/allure-results
+```
+
+Or generate static report:
+```bash
+# Generate report to allure-report directory
+allure generate BackendIntegrationTests/bin/Debug/net8.0/allure-results -o allure-report --clean
+
+# Open the report
+allure open allure-report
+```
+
+#### Allure Report Features
+
+The Allure reports provide:
+- **Overview Dashboard**: Summary statistics, success rate, test duration trends
+- **Suites**: Tests organized by suites (Authentication, Product Management)
+- **Graphs**: Visual charts showing test distribution by status, severity, and duration
+- **Timeline**: Execution timeline showing parallel test execution
+- **Behaviors**: Tests grouped by feature/behavior
+- **Categories**: Failed tests categorized by error type
+- **Test Details**: Each test includes:
+  - Description and severity level
+  - Steps and assertions
+  - Test output logs
+  - Error messages and stack traces
+  - Tags for filtering
+  - Execution history
+
+#### Understanding Test Metadata
+
+Tests are enriched with Allure attributes:
+- **Severity Levels**: Critical, Normal (indicating test priority)
+- **Tags**: login, products, authentication, validation, security, etc.
+- **Descriptions**: Detailed test purpose and validation criteria
+- **Owner**: QA Team
 
 ## Contributing
 

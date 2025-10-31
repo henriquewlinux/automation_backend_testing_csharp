@@ -3,11 +3,15 @@ using BackendIntegrationTests.Routes;
 using BackendIntegrationTests.Schemas;
 using System.Net;
 using BackendIntegrationTests.Utils.Helpers;
+using Allure.NUnit.Attributes;
+using Allure.Net.Commons;
 
 namespace BackendIntegrationTests.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
+    [AllureSuite("Product Management")]
+    [AllureDisplayIgnored]
     public class ProductsTests : IntegrationTestsSetup
     {
         private ProductsRoute _productsRoute;
@@ -30,6 +34,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureDescription("Validates that GET /products returns all products with valid schema and 200 OK status")]
+        [AllureTag("products", "get", "positive", "schema")]
+        [AllureOwner("QA Team")]
         public async Task GetAllProducts_ShouldReturnSuccessAndValidSchema()
         {
             // Act
@@ -47,6 +55,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureDescription("Validates that a product can be created with valid data and authentication token, returning 201 Created")]
+        [AllureTag("products", "create", "post", "positive", "authentication")]
+        [AllureOwner("QA Team")]
         public async Task CreateProduct_WithValidDataAndToken_ShouldReturnCreated()
         {
             // Arrange
@@ -75,6 +87,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureDescription("Validates that creating a product without authentication token returns 401 Unauthorized")]
+        [AllureTag("products", "create", "post", "negative", "authentication", "security")]
+        [AllureOwner("QA Team")]
         public async Task CreateProduct_WithoutAuthentication_ShouldReturnUnauthorized()
         {
             // Act
@@ -86,6 +102,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureDescription("Validates that creating a product with an invalid token returns 401 Unauthorized")]
+        [AllureTag("products", "create", "post", "negative", "authentication", "security")]
+        [AllureOwner("QA Team")]
         public async Task CreateProduct_WithInvalidToken_ShouldReturnUnauthorized()
         {
             // Act
@@ -97,6 +117,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.normal)]
+        [AllureDescription("Validates that creating a product with invalid data (negative price/stock) returns 400 Bad Request")]
+        [AllureTag("products", "create", "post", "negative", "validation")]
+        [AllureOwner("QA Team")]
         public async Task CreateProduct_WithInvalidData_ShouldReturnBadRequest()
         {
             // Act
@@ -108,6 +132,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.normal)]
+        [AllureDescription("Validates that creating a product without required 'name' field returns 400 Bad Request")]
+        [AllureTag("products", "create", "post", "negative", "validation")]
+        [AllureOwner("QA Team")]
         public async Task CreateProduct_WithMissingName_ShouldReturnBadRequest()
         {
             // Arrange

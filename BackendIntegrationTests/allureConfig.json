@@ -1,0 +1,18 @@
+{
+  "allure": {
+    "directory": "allure-results",
+    "title": "Backend Integration Tests - API Testing Report",
+    "links": [
+      {
+        "name": "Issue Tracker",
+        "type": "issue",
+        "pattern": "https://github.com/henriquewlinux/automation_backend_testing_csharp/issues/{}"
+      },
+      {
+        "name": "Test Management",
+        "type": "tms",
+        "pattern": "https://github.com/henriquewlinux/automation_backend_testing_csharp/issues/{}"
+      }
+    ]
+  }
+}

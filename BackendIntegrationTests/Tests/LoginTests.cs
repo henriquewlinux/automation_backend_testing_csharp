@@ -3,11 +3,15 @@ using BackendIntegrationTests.Routes;
 using BackendIntegrationTests.Utils.Helpers;
 using BackendIntegrationTests.Schemas;
 using System.Net;
+using Allure.NUnit.Attributes;
+using Allure.Net.Commons;
 
 namespace BackendIntegrationTests.Tests
 {
     [TestFixture]
     [Parallelizable(ParallelScope.All)]
+    [AllureSuite("Authentication")]
+    [AllureDisplayIgnored]
     public class LoginTests : IntegrationTestsSetup
     {
         private LoginRoute _loginRoute;
@@ -25,6 +29,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureDescription("Validates that a user can successfully login with valid credentials and receive a valid JWT token")]
+        [AllureTag("login", "authentication", "positive")]
+        [AllureOwner("QA Team")]
         public async Task Login_WithValidCredentials_ShouldReturnSuccessAndValidToken()
         {
             // Act
@@ -46,6 +54,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureDescription("Validates that login fails with invalid credentials and returns 401 Unauthorized")]
+        [AllureTag("login", "authentication", "negative", "security")]
+        [AllureOwner("QA Team")]
         public async Task Login_WithInvalidCredentials_ShouldReturnUnauthorized()
         {
             // Act
@@ -60,6 +72,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.normal)]
+        [AllureDescription("Validates that login fails when email is empty and returns 400 Bad Request")]
+        [AllureTag("login", "authentication", "validation", "negative")]
+        [AllureOwner("QA Team")]
         public async Task Login_WithEmptyEmail_ShouldReturnBadRequest()
         {
             // Act
@@ -71,6 +87,10 @@ namespace BackendIntegrationTests.Tests
         }
 
         [Test]
+        [AllureSeverity(SeverityLevel.normal)]
+        [AllureDescription("Validates that login fails when password is empty and returns 400 Bad Request")]
+        [AllureTag("login", "authentication", "validation", "negative")]
+        [AllureOwner("QA Team")]
         public async Task Login_WithEmptyPassword_ShouldReturnBadRequest()
         {
             // Act

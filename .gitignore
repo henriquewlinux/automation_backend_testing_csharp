@@ -7,3 +7,9 @@ BackendIntegrationTests/obj/
 *.tmp
 *.cache
 *.txt
+
+# Allure Reports
+allure-results/
+allure-report/
+BackendIntegrationTests/allure-results/
+BackendIntegrationTests/allure-report/

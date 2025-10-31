@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using BackendIntegrationTests.Utils.Bases;
 using NUnit.Framework;
+using Allure.Net.Commons;
 
 [assembly: Parallelizable(ParallelScope.All)]
 [assembly: LevelOfParallelism(8)]
@@ -51,5 +52,29 @@ public class IntegrationTestsSetup
         var status = testStatus == NUnit.Framework.Interfaces.TestStatus.Passed ? "success" : "fail";
         TestContext.WriteLine($"Test Finished: {TestContext.CurrentContext.Test.Name} - Status: {status}");
         TestContext.WriteLine("=============================================================");
+
+        // Attach test information to Allure report
+        try
+        {
+            var testContext = TestContext.CurrentContext;
+
+            // Add test execution details - Allure will automatically capture status, message and stack trace
+            AllureLifecycle.Instance.UpdateTestCase(testCase =>
+            {
+                testCase.statusDetails = testCase.statusDetails ?? new StatusDetails();
+                if (!string.IsNullOrEmpty(testContext.Result.Message))
+                {
+                    testCase.statusDetails.message = testContext.Result.Message;
+                }
+                if (!string.IsNullOrEmpty(testContext.Result.StackTrace))
+                {
+                    testCase.statusDetails.trace = testContext.Result.StackTrace;
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            TestContext.WriteLine($"Warning: Failed to attach Allure data: {ex.Message}");
+        }
     }
 }
