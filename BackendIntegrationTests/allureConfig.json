@@ -1,7 +1,7 @@
 {
   "allure": {
     "directory": "allure-results",
-    "title": "MCP playwright",
+    "title": "Report Automation Backend Testing",
     "links": [
       "https://github.com/henriquewlinux/automation_backend_testing_csharp/issues/{issue}",
       "https://github.com/henriquewlinux/automation_backend_testing_csharp/issues/{tms}"
