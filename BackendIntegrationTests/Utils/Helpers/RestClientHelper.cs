@@ -10,7 +10,7 @@ namespace BackendIntegrationTests.Utils.Helpers
         {
             var options = new RestClientOptions(IntegrationTestsSetup.BaseUrl)
             {
-                MaxTimeout = (int)TimeSpan.FromSeconds(IntegrationTestsSetup.TimeoutSeconds).TotalMilliseconds
+                Timeout = TimeSpan.FromSeconds(IntegrationTestsSetup.TimeoutSeconds)
             };
             _client = new RestClient(options);
         }

@@ -17,9 +17,9 @@ namespace BackendIntegrationTests.Tests
     {
         private LoginRoute _loginRoute;
 
-        // Test Data Properties
-        private new Credential ValidCredential => TestData.Credentials.Valid;
-        private new Credential InvalidCredential => TestData.Credentials.Invalid;
+        // Test Data Properties - Access credentials from base class
+        private static Credential ValidCredential => _credentials.Value["valid"];
+        private static Credential InvalidCredential => _credentials.Value["invalid"];
 
         [OneTimeSetUp]
         public void SetUpLoginRoute()

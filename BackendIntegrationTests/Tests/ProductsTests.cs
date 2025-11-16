@@ -4,6 +4,7 @@ using BackendIntegrationTests.Schemas;
 using System.Net;
 using BackendIntegrationTests.Utils.Helpers;
 using BackendIntegrationTests.Models.TestData;
+using BackendIntegrationTests.Utils.Extensions;
 using Allure.NUnit.Attributes;
 using Allure.Net.Commons;
 
@@ -19,11 +20,10 @@ namespace BackendIntegrationTests.Tests
         private LoginRoute _loginRoute;
         private string? _token;
 
-        // Test Data Properties
-        private new Credential ValidCredential => TestData.Credentials.Valid;
-        private new Credential InvalidCredential => TestData.Credentials.Invalid;
-        private new Product ValidProduct => TestData.Products.Valid;
-        private new Product InvalidProduct => TestData.Products.Invalid;
+        // Test Data Properties - Access data from base class
+        private static Credential ValidCredential => _credentials.Value["valid"];
+        private static Product ValidProduct => _products.Value["valid"];
+        private static Product InvalidProduct => _products.Value["invalid"];
 
         [OneTimeSetUp]
         public async Task SetUpProductsRoute()
