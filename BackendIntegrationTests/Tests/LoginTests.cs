@@ -6,6 +6,7 @@ using BackendIntegrationTests.Models.TestData;
 using System.Net;
 using Allure.NUnit.Attributes;
 using Allure.Net.Commons;
+using Newtonsoft.Json;
 
 namespace BackendIntegrationTests.Tests
 {
@@ -50,11 +51,12 @@ namespace BackendIntegrationTests.Tests
             Assert.That(response.Content, Is.Not.Null.And.Not.Empty,
                 "Response content should not be null or empty");
 
-            // Valida o schema da resposta
+            // Assert Schema
             SchemaValidator.AssertJsonSchema(response.Content, LoginSchema.Schema, "ShouldReturnSuccessAndValidToken");
 
-            // Extrai e valida o token
-            var token = _loginRoute.ExtractTokenFromResponse(response);
+            // Assert Token
+            dynamic? jsonResponse = JsonConvert.DeserializeObject(response.Content!);
+            var token = jsonResponse?.token?.ToString();
             Assert.That(token, Is.Not.Null.And.Not.Empty, "Token should be present in response");
         }
 

@@ -19,8 +19,6 @@ namespace BackendIntegrationTests.Tests
         private ProductsRoute _productsRoute;
         private LoginRoute _loginRoute;
         private string? _token;
-
-        // Test Data Properties - Access data from base class
         private static Credential ValidCredential => _credentials.Value["valid"];
         private static Product ValidProduct => _products.Value["valid"];
         private static Product InvalidProduct => _products.Value["invalid"];

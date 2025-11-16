@@ -26,25 +26,7 @@ public class LoginRoute : RestClientHelper
         };
 
         var response = await ExecuteAsyncPost(ROUTE, data);
-
-        var token = ExtractTokenFromResponse(response);
-        return token;
-    }
-
-    public string? ExtractTokenFromResponse(RestSharp.RestResponse response)
-    {
-        if (response.IsSuccessful && !string.IsNullOrEmpty(response.Content))
-        {
-            try
-            {
-                dynamic? jsonResponse = JsonConvert.DeserializeObject(response.Content);
-                return jsonResponse?.token?.ToString();
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        return null;
+        dynamic? jsonResponse = JsonConvert.DeserializeObject(response.Content!);
+        return jsonResponse?.token?.ToString();
     }
 }
